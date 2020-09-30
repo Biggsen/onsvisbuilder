@@ -1,12 +1,25 @@
-const gulp = require('gulp') ;
+const { src, dest, series } = require('gulp') ;
 const nunjucks = require('gulp-nunjucks') ;
-const COMPILE = {
-    SRC: '/src/**.html',
-    DEST: '/dist'
-};
+const del = require('del') ;
 
-exports.default = () => (
-    gulp.src('index.html')
+function assets() {
+    return src('./public/**/*')
+        .pipe(dest('./dist'))
+}
+
+function html() {
+    return src('index.njk')
         .pipe(nunjucks.compile({name: 'Sindre'}))
-        .pipe(gulp.dest('dist'))
-);
+        .pipe(dest('./dist'))
+}
+
+function clean() {
+    return del('./dist')
+}
+
+const build = series(clean, assets, html)
+
+exports.clean = clean
+exports.assets = assets
+exports.html = html
+exports.build = build
