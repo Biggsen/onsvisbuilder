@@ -8,9 +8,9 @@ if(Modernizr.webgl) {
 
 	//Load data and config file
 	d3.queue()
-		.defer(d3.csv, "./data/data.csv")
-		.defer(d3.json, "./data/config.json")
-		.defer(d3.json, "./data/geog.json")
+		.defer(d3.csv, "simplemap/data/data.csv")
+		.defer(d3.json, "simplemap/data/config.json")
+		.defer(d3.json, "simplemap/data/geog.json")
 		.await(ready);
 
 
@@ -44,7 +44,7 @@ if(Modernizr.webgl) {
 		//set up basemap
 		map = new mapboxgl.Map({
 		  container: 'map', // container id
-		  style: './data/style.json', //stylesheet location //includes key for API
+		  style: 'common/data/style.json', //stylesheet location //includes key for API
 		  center: [-2.5, 54], // starting position
 		  minZoom: 3.5,//
 		  zoom: 4.5, // starting zoom

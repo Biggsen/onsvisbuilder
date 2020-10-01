@@ -1,5 +1,5 @@
-{% set title = 'ONS Vis Builder' %}
-{% extends 'templates/_layout.njk' %}
+{% set title = title %}
+{% extends './_layout.njk' %}
 {% block content %}
 <div class="row">
   <div id='nav' class="col-sm-12">
@@ -16,7 +16,7 @@
     </div>
   </div>
 </div>
-<div class="row" id="source">Source: Office for National Statistics.</div>
+<div class="row" id="source">Source: Office for National Statistics. {{ title }}</div>
 {% endblock %}
 
 
