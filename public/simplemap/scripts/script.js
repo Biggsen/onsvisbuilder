@@ -1,4 +1,12 @@
-const chroma = require('chroma-js')
+// Describe topojson
+const topojson = require("topojson");
+
+// Describe Chroma
+import chroma from 'chroma-js'
+
+// Describe Throttle / debounce
+import { debounce } from 'throttle-debounce'
+
 //test if browser supports webGL
 
 if(Modernizr.webgl) {
