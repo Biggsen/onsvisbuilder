@@ -1,10 +1,14 @@
-
+const chroma = require('chroma-js')
 //test if browser supports webGL
 
 if(Modernizr.webgl) {
 
 	//setup pymjs
 	var pymChild = new pym.Child();
+
+	let rateById = {};
+	let areaById = {};
+	let x;
 
 	//Load data and config file
 	d3.queue()
@@ -17,13 +21,14 @@ if(Modernizr.webgl) {
 	function ready (error, data, config, geog){
 
 		//Set up global variables
-		dvc = config.ons;
-		oldAREACD = "";
-		selected = false;
-		firsthover = true;
+		const dvc = config.ons;
+		let oldAREACD = "";
+		let newAREACD = '';
+		let selected = false;
+		let firsthover = true;
 
 		//Get column names
-		variable = null;
+		let variable = null;
 		for (var column in data[0]) {
 			if (column == 'AREACD') continue;
 			if (column == 'AREANM') continue;
@@ -38,11 +43,11 @@ if(Modernizr.webgl) {
 		selectlist(data);
 
 		//Set up number formats
-		displayformat = d3.format("." + dvc.displaydecimals + "f");
-		legendformat = d3.format("." + dvc.legenddecimals + "f");
+		const displayformat = d3.format("." + dvc.displaydecimals + "f");
+		const legendformat = d3.format("." + dvc.legenddecimals + "f");
 
 		//set up basemap
-		map = new mapboxgl.Map({
+		const map = new mapboxgl.Map({
 		  container: 'map', // container id
 		  style: 'common/data/style.json', //stylesheet location //includes key for API
 		  center: [-2.5, 54], // starting position
@@ -88,19 +93,17 @@ if(Modernizr.webgl) {
 		createKey(config);
 
 		//convert topojson to geojson
-		for(key in geog.objects){
+		for(let key in geog.objects){
 			var areas = topojson.feature(geog, geog.objects[key])
 		}
 
 		//Work out extend of loaded geography file so we can set map to fit total extent
-		bounds = turf.extent(areas);
+		const bounds = turf.extent(areas);
 
 		//set map to total extent
 		setTimeout(function(){
 			map.fitBounds([[bounds[0],bounds[1]], [bounds[2], bounds[3]]])
 		},1000);
-
-
 
 		//and add properties to the geojson based on the csv file we've read in
 		areas.features.map(function(d,i) {
@@ -116,12 +119,16 @@ if(Modernizr.webgl) {
 			map.dragPan.disable();
 		};
 
+		let breaks = [];
+
+
+
 		function defineBreaks(){
 
-			rateById = {};
-			areaById = {};
-
-			data.forEach(function(d) {rateById[d.AREACD] = +d[variable]; areaById[d.AREACD] = d.AREANM}); //change to brackets
+			data.forEach(function(d) {
+				rateById[d.AREACD] = +d[variable];
+				areaById[d.AREACD] = d.AREANM
+			}); //change to brackets
 
 
 			//Flatten data values and work out breaks
@@ -129,8 +136,8 @@ if(Modernizr.webgl) {
 				var values =  data.map(function(d) { return +d[variable]; }).filter(function(d) {return !isNaN(d)}).sort(d3.ascending);
 			};
 
+
 			if(config.ons.breaks =="jenks") {
-				breaks = [];
 
 				ss.ckmeans(values, (dvc.numberBreaks)).map(function(cluster,i) {
 					if(i<dvc.numberBreaks-1) {
@@ -154,13 +161,17 @@ if(Modernizr.webgl) {
 			});
 
 			//work out halfway point (for no data position)
-			midpoint = breaks[0] + ((breaks[dvc.numberBreaks] - breaks[0])/2)
+			const midpoint = breaks[0] + ((breaks[dvc.numberBreaks] - breaks[0])/2)
 
 		}
+
+		let color;
+		let colour;
 
 		function setupScales() {
 			//set up d3 color scales
 			//Load colours
+
 			if(typeof dvc.varcolour === 'string') {
 				color=chroma.scale(dvc.varcolour).colors(dvc.numberBreaks)
 				colour=[]
@@ -198,8 +209,8 @@ if(Modernizr.webgl) {
 			  }, 'place_city');
 
 			//Get current year for copyright
-			today = new Date();
-			copyYear = today.getFullYear();
+			const today = new Date();
+			const copyYear = today.getFullYear();
 			map.style.sourceCaches['area']._source.attribution = "Contains OS data &copy; Crown copyright and database right " + copyYear;
 
 			map.addLayer({
@@ -416,9 +427,9 @@ if(Modernizr.webgl) {
 
 		function zoomToArea(code) {
 
-			specificpolygon = areas.features.filter(function(d) {return d.properties.AREACD == code})
+			let specificpolygon = areas.features.filter(function(d) {return d.properties.AREACD == code})
 
-			specific = turf.extent(specificpolygon[0].geometry);
+			let specific = turf.extent(specificpolygon[0].geometry);
 
 			map.fitBounds([[specific[0],specific[1]], [specific[2], specific[3]]], {
   				padding: {top: 150, bottom:150, left: 100, right: 100}
@@ -433,7 +444,9 @@ if(Modernizr.webgl) {
 		}
 
 
+
 		function setAxisVal(code) {
+
 			d3.select('#accessibilityInfo').select('p.visuallyhidden')
 			.text(function(){
 				if (!isNaN(rateById[code])) {
@@ -473,7 +486,7 @@ if(Modernizr.webgl) {
 
 			d3.select("#keydiv").selectAll("*").remove();
 
-			keywidth = d3.select("#keydiv").node().getBoundingClientRect().width;
+			const keywidth = d3.select("#keydiv").node().getBoundingClientRect().width;
 
 			var svgkey = d3.select("#keydiv")
 				.append("svg")
@@ -492,7 +505,6 @@ if(Modernizr.webgl) {
 				.domain([breaks[0], breaks[dvc.numberBreaks]]) /*range for data*/
 				.range([0,keywidth-30]); /*range for pixels*/
 
-
 			var xAxis = d3.axisBottom(x)
 				.tickSize(15)
 				.tickValues(color.domain())
@@ -502,7 +514,7 @@ if(Modernizr.webgl) {
 				.attr("transform", "translate(15,35)");
 
 
-			keyhor = d3.select("#horiz");
+			let keyhor = d3.select("#horiz");
 
 			g2.selectAll("rect")
 				.data(color.range().map(function(d,i) {
@@ -677,7 +689,7 @@ if(Modernizr.webgl) {
 				.attr("id",function(d){return d[1]})
 				.text(function(d){ return d[0]});
 
-			myId=null;
+			const myId=null;
 
 			 $('#areaselect').chosen({placeholder_text_single:"Select an area",allow_single_deselect:true})
 
@@ -687,7 +699,7 @@ if(Modernizr.webgl) {
 			$('#areaselect').on('change',function(){
 
 					if($('#areaselect').val() != "") {
-							areacode = $('#areaselect').val()
+							let areacode = $('#areaselect').val()
 
 							disableMouseEvents();
 
