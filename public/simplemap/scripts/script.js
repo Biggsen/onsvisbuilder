@@ -1,5 +1,3 @@
-
-
 // Describe topojson
 const topojson = require("topojson")
 
@@ -707,8 +705,6 @@ if(Modernizr.webgl) {
 				.attr("value", function(d){ return d[1]})
 				.attr("id",function(d){return d[1]})
 				.text(function(d){ return d[0]});
-
-			const myId=null;
 
 			 $('#areaselect').chosen({placeholder_text_single:"Select an area",allow_single_deselect:true})
 

@@ -1,9 +1,12 @@
-const { src, dest, series, watch } = require('gulp') ;
-const browserify = require("browserify");
-const babelify = require("babelify");
-const source = require("vinyl-source-stream");
-const nunjucks = require('gulp-nunjucks') ;
-const del = require('del') ;
+const { src, dest, series, watch } = require('gulp')
+const browserify = require("browserify")
+const babelify = require("babelify")
+const source = require("vinyl-source-stream")
+const nunjucks = require('gulp-nunjucks')
+const del = require('del')
+const config = require('./config')
+
+const type = config.project.type
 
 function assets() {
     return src('./public/**/*')
@@ -23,17 +26,17 @@ function clean() {
 function scripts() {
     return (
         browserify({
-            entries: ['./public/simplemap/scripts/script.js'],
+            entries: [`./public/${type}/scripts/script.js`],
             transform: [babelify.configure({ presets: ["@babel/preset-env"] })]
         })
             .bundle()
             .pipe(source('main.js'))
-            .pipe(dest('./public/simplemap/js'))
+            .pipe(dest(`./public/${type}/js`))
     )
 }
 
 function watchFiles() {
-    watch('./public/simplemap/scripts/script.js', scripts)
+    watch(`./public/${type}/scripts/script.js`, scripts)
 }
 
 
