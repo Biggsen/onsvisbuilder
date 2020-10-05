@@ -1,9 +1,34 @@
 //test if browser supports webGL
 
+// Describe topojson
+const topojson = require("topojson")
+
+// Describe Simple Statistics
+import * as ss from 'simple-statistics'
+
+// Describe Chroma
+import chroma from 'chroma-js'
+
+// Describe Throttle / debounce
+import { debounce } from 'throttle-debounce'
+
+// Describe mapbox-gl
+import mapboxgl from 'mapbox-gl'
+
+// Describe Turf
+import * as turf from 'turf'
+
 if (Modernizr.webgl) {
 
   //setup pymjs
   var pymChild = new pym.Child();
+
+  let rateById = {};
+  let areaById = {};
+  let allvalues = [];
+  let x;
+  let y;
+  var line1;
 
   //first load config file
 
@@ -19,14 +44,16 @@ if (Modernizr.webgl) {
   function ready(error, data, config, geog) {
 
     //Set up global variables
-    dvc = config.ons;
-    oldAREACD = "";
-    selected = false;
-    firsthover = true;
-    chartDrawn = false;
-    thisdata = data;
-    overallwidth = d3.select("body").node().getBoundingClientRect().width;
-    navvalue = 0;
+    const dvc = config.ons;
+    let oldAREACD = "";
+    let newAREACD = '';
+    let selected = false;
+    let firsthover = true;
+    let chartDrawn = false;
+    let thisdata = data;
+    let overallwidth = d3.select("body").node().getBoundingClientRect().width;
+    let navvalue = 0;
+    let mobile;
 
     if (overallwidth < 600) {
       mobile = true;
@@ -37,14 +64,15 @@ if (Modernizr.webgl) {
 
 
     //Get column names and number
-    variables = [];
+    let variables = [];
     for (var column in data[0]) {
       if (column == 'AREACD') continue;
       if (column == 'AREANM') continue;
       variables.push(column);
     }
 
-    b = 0;
+    let a;
+    let b = 0;
 
     if (dvc.timeload == "last") {
       a = variables.length - 1;
@@ -67,11 +95,11 @@ if (Modernizr.webgl) {
     selectlist(data);
 
     //Set up number formats
-    displayformat = d3.format("." + dvc.displaydecimals + "f");
-    legendformat = d3.format("." + dvc.legenddecimals + "f");
+    const displayformat = d3.format("." + dvc.displaydecimals + "f");
+    const legendformat = d3.format("." + dvc.legenddecimals + "f");
 
     //set up basemap
-    map = new mapboxgl.Map({
+    const map = new mapboxgl.Map({
       container: 'map', // container id
       style: 'common/data/style.json', //stylesheet location //includes key for API
       center: [-2.5, 54], // starting position
@@ -121,12 +149,12 @@ if (Modernizr.webgl) {
     createKey(config);
 
     //convert topojson to geojson
-    for (key in geog.objects) {
+    for (var key in geog.objects) {
       var areas = topojson.feature(geog, geog.objects[key])
     }
 
     //Work out extend of loaded geography file so we can set map to fit total extent
-    bounds = turf.extent(areas);
+    const bounds = turf.bbox(areas);
 
     //set map to total extent
     setTimeout(function() {
@@ -154,7 +182,7 @@ if (Modernizr.webgl) {
 
     function buildNav() {
 
-      fieldset=d3.select('#nav').append('fieldset');
+      const fieldset=d3.select('#nav').append('fieldset');
 
       fieldset
       .append('legend')
@@ -168,10 +196,10 @@ if (Modernizr.webgl) {
       .append('span')
       .attr('id','selected');
 
-      grid=fieldset.append('div')
+      const grid=fieldset.append('div')
       .attr('class','grid grid--full large-grid--fit');
 
-      cell=grid.selectAll('div')
+      const cell=grid.selectAll('div')
       .data(dvc.varlabels)
       .enter()
       .append('div')
@@ -198,7 +226,7 @@ if (Modernizr.webgl) {
 
 
       //mobile nav
-      selectgroup = d3.select('#selectnav');
+      const selectgroup = d3.select('#selectnav');
 
       selectgroup.append('label')
         .attr('for','mobileDropdown')
@@ -249,7 +277,7 @@ if (Modernizr.webgl) {
 
     }
 
-
+    let breaks = [];
 
     function defineBreaks(data) {
       //Flatten data values and work out breaks
@@ -265,7 +293,6 @@ if (Modernizr.webgl) {
       // parse data into columns
       if (config.ons.breaks == "jenks" || config.ons.breaks == "equal") {
         var values = [];
-        allvalues = [];
 
         for (var column in data[0]) {
           if (column != 'AREANM' && column != 'AREACD') {
@@ -284,7 +311,6 @@ if (Modernizr.webgl) {
       }
 
       if (config.ons.breaks == "jenks") {
-        breaks = [];
 
         ss.ckmeans(allvalues, (dvc.numberBreaks)).map(function(cluster, i) {
           if (i < dvc.numberBreaks - 1) {
@@ -308,9 +334,12 @@ if (Modernizr.webgl) {
       });
 
       //work out halfway point (for no data position)
-      midpoint = breaks[0] + ((breaks[dvc.numberBreaks] - breaks[0]) / 2)
+      const midpoint = breaks[0] + ((breaks[dvc.numberBreaks] - breaks[0]) / 2)
 
     }
+
+    let color;
+    let colour;
 
     function setupScales() {
       //set up d3 color scales
@@ -359,8 +388,8 @@ if (Modernizr.webgl) {
 
 
       //Get current year for copyright
-      today = new Date();
-      copyYear = today.getFullYear();
+      const today = new Date();
+      const copyYear = today.getFullYear();
       map.style.sourceCaches['area']._source.attribution = "Contains OS data &copy; Crown copyright and database right " + copyYear;
 
       map.addLayer({
@@ -451,7 +480,7 @@ if (Modernizr.webgl) {
       map.getSource('area').setData(areas);
 
       //set up style object
-      styleObject = {
+      let styleObject = {
         type: 'identity',
         property: 'fill'
       }
@@ -467,7 +496,7 @@ if (Modernizr.webgl) {
       navvalue = i;
       //load new csv file
 
-      filepth = "changeovertime/data/data" + i + ".csv"
+      let filepth = "changeovertime/data/data" + i + ".csv"
 
       d3.csv(filepth, function(data) {
         thisdata = data;
@@ -503,7 +532,10 @@ if (Modernizr.webgl) {
 
     }
 
+
     function onPlay() {
+      let animating;
+
       // if playing, pause
       if(d3.select("#play").classed('playing')===true){
         d3.select("#play").classed('playing',false);
@@ -670,11 +702,11 @@ if (Modernizr.webgl) {
 
     function zoomToArea(code) {
 
-      specificpolygon = areas.features.filter(function(d) {
+      let specificpolygon = areas.features.filter(function(d) {
         return d.properties.AREACD == code
       })
 
-      specific = turf.extent(specificpolygon[0].geometry);
+      let specific = turf.bbox(specificpolygon[0].geometry);
 
       map.fitBounds([
         [specific[0], specific[1]],
@@ -773,6 +805,7 @@ if (Modernizr.webgl) {
           if (!isNaN(rateById[code])) { // if there exists a numerical value
             // if value is greater than threshold, put it below the line
             var yThreshold = ( y.domain()[0] + y.domain()[1] ) * 2 / 3
+            let yAdjustment;
             if (rateById[code] > yThreshold ) {
               yAdjustment = 22
             } else { // otherwise it goes above
@@ -860,17 +893,21 @@ if (Modernizr.webgl) {
 
     }
 
+    let svgkeyGroup;
+
 
     function updateChart(code, selectlist) {
+      let valuesx;
+      let values;
 
       if (chartDrawn == false) {
 
         chartDrawn = true;
 
-
-        selectedarea = thisdata.filter(function(d) {
+        let selectedarea = thisdata.filter(function(d) {
           return d.AREACD == code
         });
+
 
         selectedarea.forEach(function(d) {
           valuesx = variables.map(function(name) {
@@ -880,9 +917,7 @@ if (Modernizr.webgl) {
 
         values = valuesx.slice(0);
 
-
-
-        linedata = d3.zip(dvc.timepoints, values);
+        var linedata = d3.zip(dvc.timepoints, values);
 
         line1 = d3.line()
           .defined(function(linedata) {
@@ -920,7 +955,7 @@ if (Modernizr.webgl) {
 
       } else {
 
-        selectedarea = thisdata.filter(function(d) {
+        let selectedarea = thisdata.filter(function(d) {
           return d.AREACD == code
         });
 
@@ -974,11 +1009,11 @@ if (Modernizr.webgl) {
 
         d3.select("#keydiv").append("p").attr("id", "keyunit").attr('aria-hidden',true).style("margin-top", "25px").style("margin-left", "10px").style("font-size","14px").text(dvc.varunit[b]);
 
-        keyheight = 150;
+        let keyheight = 150;
 
-        keywidth = d3.select("#keydiv").node().getBoundingClientRect().width;
+        let keywidth = d3.select("#keydiv").node().getBoundingClientRect().width;
 
-        svgkey = d3.select("#keydiv")
+        let svgkey = d3.select("#keydiv")
           .append("svg")
           .attr('aria-hidden',true)
           .attr("id", "key")
@@ -1084,13 +1119,13 @@ if (Modernizr.webgl) {
           .attr("fill", "#000")
           .text("");
 
-        varNum = navvalue;
+        let varNum = navvalue;
 
         // check there are average values
         if (dvc.average[varNum] != null) {
-          linedata2 = d3.zip(dvc.timepoints, dvc.average[varNum]);
+          let linedata2 = d3.zip(dvc.timepoints, dvc.average[varNum]);
 
-          line2 = d3.line()
+          let line2 = d3.line()
             .defined(function(d) {
               return !isNaN(d[0]);
             })
@@ -1384,8 +1419,6 @@ if (Modernizr.webgl) {
           return d[0]
         });
 
-      myId = null;
-
       $('#areaselect').chosen({
         placeholder_text_single: "Select an area",
         allow_single_deselect: true
@@ -1398,7 +1431,7 @@ if (Modernizr.webgl) {
 
         if ($('#areaselect').val() != "") {
 
-          areacode = $('#areaselect').val()
+          let areacode = $('#areaselect').val()
 
           disableMouseEvents();
 
