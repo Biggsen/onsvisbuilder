@@ -1,3 +1,5 @@
+
+
 // Describe topojson
 const topojson = require("topojson")
 
@@ -9,6 +11,12 @@ import chroma from 'chroma-js'
 
 // Describe Throttle / debounce
 import { debounce } from 'throttle-debounce'
+
+// Describe mapbox-gl
+import mapboxgl from 'mapbox-gl'
+
+// Describe Turf
+import * as turf from 'turf'
 
 //test if browser supports webGL
 
@@ -109,7 +117,7 @@ if(Modernizr.webgl) {
 		}
 
 		//Work out extend of loaded geography file so we can set map to fit total extent
-		const bounds = turf.extent(areas);
+		const bounds = turf.bbox(areas);
 
 		//set map to total extent
 		setTimeout(function(){
@@ -440,7 +448,7 @@ if(Modernizr.webgl) {
 
 			let specificpolygon = areas.features.filter(function(d) {return d.properties.AREACD == code})
 
-			let specific = turf.extent(specificpolygon[0].geometry);
+			let specific = turf.bbox(specificpolygon[0].geometry);
 
 			map.fitBounds([[specific[0],specific[1]], [specific[2], specific[3]]], {
   				padding: {top: 150, bottom:150, left: 100, right: 100}
