@@ -1,5 +1,8 @@
 // Describe topojson
-const topojson = require("topojson");
+const topojson = require("topojson")
+
+// Describe Simple Statistics
+import * as ss from 'simple-statistics'
 
 // Describe Chroma
 import chroma from 'chroma-js'

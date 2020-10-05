@@ -19,6 +19,7 @@
     "gulp": "^4.0.2",
     "gulp-nunjucks": "^5.1.0",
     "nunjucks": "^3.2.2",
+    "simple-statistics": "^7.3.0",
     "throttle-debounce": "^2.3.0",
     "topojson": "^3.0.2",
     "vinyl-source-stream": "^2.0.0"
