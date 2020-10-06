@@ -23,10 +23,10 @@
   <title>Multiple variables map</title>
   <meta name='viewport' content='initial-scale=1' />
 
-  <link rel='stylesheet' href='/common/mapbox-gl/mapbox-gl.css' />
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/common/chosen/css/chosen.css">
-  <link rel="stylesheet" href="/simplemap/css/styles.css">
+  {% for css in css %}
+    <link rel="stylesheet" href="{{ css.link }}">
+  {% endfor %}
 
 </head>
 
@@ -34,23 +34,13 @@
   <noscript>
     <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MBCBVQS" height="0" width="0" style="display:none;visibility:hidden"></iframe>
   </noscript>
+
 {% block content %}
 {% endblock %}
-  <script src="https://cdn.ons.gov.uk/vendor/d3/4.2.7/d3.min.js"></script>
-  <!-- <script src="/common/js/topojson.v2.min.js"></script> -->
-  <!-- <script src="/common/js/simple-statistics.min.js"></script> -->
-  <script src="/common/js/modernizr.min.js"></script>
-  <script src="/common/js/d3-queue.min.js"></script>
-  <!-- <script src="/common/js/chroma.min.js"></script> -->
-  <script src="https://code.jquery.com/jquery-3.0.0.slim.min.js"></script>
-  <script src="/common/chosen/chosen.jquery.js"></script>
-  <!-- <script src="/common/js/limit.js"></script> -->
-  <script src="https://cdn.ons.gov.uk/vendor/pym/1.3.2/pym.min.js"></script>
 
-  <!-- <script src='/common/mapbox-gl/mapbox-gl.js'></script> -->
-  <!-- <script src='/common/js/turf.min.js'></script> -->
-  <script src="/simplemap/js/main.js"></script>
-
+  {% for js in js %}
+    <script src="{{ js.link }}"></script>
+  {% endfor %}
 
   <noscript>
     <p>Your browser does not support JavaScript. If you're able to please enable Javascript to view the map.</p>
