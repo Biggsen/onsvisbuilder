@@ -13842,7 +13842,6 @@ if (Modernizr.webgl) {
       }).text(function (d) {
         return d[0];
       });
-      var myId = null;
       $('#areaselect').chosen({
         placeholder_text_single: "Select an area",
         allow_single_deselect: true

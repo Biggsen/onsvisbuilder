@@ -68,7 +68,7 @@ function copyImages() {
 
 function copyJS() {
     return src([
-        `public/${type}/js/*.js`
+        `public/${type}/compiled/js/*.js`
     ])
     .pipe(dest(`dist/${id}/${type}/js`))
 }
@@ -91,7 +91,7 @@ function scripts() {
         })
             .bundle()
             .pipe(source('main.js'))
-            .pipe(dest(`./public/${id}/${type}/js`))
+            .pipe(dest(`./public/${type}/compiled/js`))
     )
 }
 
