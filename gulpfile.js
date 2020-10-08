@@ -13,35 +13,35 @@ const id = config.project.id
 function copyCommonCSS() {
     let cssList = [];
     for (const asset of assetsConfig[type].css) {
-        if ((asset.link).substr(0, 1) === '/') {
-            cssList.push(`public${asset.link}`)
+        if ((asset.link).substr(0, 5) !== 'https') {
+            cssList.push(`public/${asset.link}`)
         }
     }
-    return src(cssList).pipe(dest('dist/common/css'))
+    return src(cssList).pipe(dest(`dist/${id}/common/css`))
 }
 
 function copyCommonData() {
     return src([
         `public/common/data/*`
     ])
-    .pipe(dest(`dist/common/data`))
+    .pipe(dest(`dist/${id}/common/data`))
 }
 
 function copyCommonImages() {
     return src([
         `public/common/images/*`
     ])
-    .pipe(dest(`dist/common/images`))
+    .pipe(dest(`dist/${id}/common/images`))
 }
 
 function copyCommonJS() {
     let jsList = [];
     for (const asset of assetsConfig[type].js) {
-        if ((asset.link).substr(0, 1) === '/') {
-            jsList.push(`public${asset.link}`)
+        if ((asset.link).substr(0, 5) !== 'https') {
+            jsList.push(`public/${asset.link}`)
         }
     }
-    return src(jsList).pipe(dest('dist/common/js'))
+    return src(jsList).pipe(dest(`dist/${id}/common/js`))
 }
 
 
@@ -49,38 +49,38 @@ function copyCSS() {
     return src([
         `public/${type}/css/*.css`
     ])
-    .pipe(dest(`dist/${type}/css`))
+    .pipe(dest(`dist/${id}/${type}/css`))
 }
 
 function copyData() {
     return src([
         `public/${type}/data/*`
     ])
-    .pipe(dest(`dist/${type}/data`))
+    .pipe(dest(`dist/${id}/${type}/data`))
 }
 
 function copyImages() {
     return src([
         `public/${type}/images/*`
     ])
-    .pipe(dest(`dist/${type}/images`))
+    .pipe(dest(`dist/${id}/${type}/images`))
 }
 
 function copyJS() {
     return src([
         `public/${type}/js/*.js`
     ])
-    .pipe(dest(`dist/${type}/js`))
+    .pipe(dest(`dist/${id}/${type}/js`))
 }
 
 function compileHTML() {
     return src(`./templates/${type}/index.njk`)
         .pipe(nunjucks.compile(assetsConfig[type]))
-        .pipe(dest('./dist'))
+        .pipe(dest(`./dist/${id}`))
 }
 
 function clean() {
-    return del('./dist')
+    return del(`./dist`)
 }
 
 function scripts() {
@@ -91,12 +91,12 @@ function scripts() {
         })
             .bundle()
             .pipe(source('main.js'))
-            .pipe(dest(`./public/${type}/js`))
+            .pipe(dest(`./public/${id}/${type}/js`))
     )
 }
 
 function watchFiles() {
-    watch(`./public/${type}/scripts/script.js`, scripts)
+    watch(`./public/${id}/${type}/scripts/script.js`, scripts)
 }
 
 
