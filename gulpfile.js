@@ -70,7 +70,7 @@ function copyJS() {
     return src([
         `public/${type}/compiled/js/*.js`
     ])
-    .pipe(dest(`dist/${id}/${type}/js`))
+    .pipe(dest(`dist/${id}/${type}/compiled/js`))
 }
 
 function compileHTML() {

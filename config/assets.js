@@ -13,7 +13,7 @@ assets.simplemap = {
         { link: 'https://code.jquery.com/jquery-3.0.0.slim.min.js' },
         { link: 'common/js/chosen.jquery.js' },
         { link: 'https://cdn.ons.gov.uk/vendor/pym/1.3.2/pym.min.js' },
-        { link: 'simplemap/js/main.js' }
+        { link: 'simplemap/compiled/js/main.js' }
     ]
 }
 
@@ -30,7 +30,7 @@ assets.changeovertime = {
         { link: 'https://cdn.ons.gov.uk/vendor/jquery/2.1.4/jquery.min.js' },
         { link: 'common/js/chosen.jquery.js' },
         { link: 'https://cdn.ons.gov.uk/vendor/pym/1.3.2/pym.min.js' },
-        { link: 'changeovertime/js/main.js' }
+        { link: 'changeovertime/compiled/js/main.js' }
     ]
 }
 
