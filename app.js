@@ -1,7 +1,7 @@
 const express = require('express')
 const nunjucks = require('nunjucks')
 const app = express()
-var config = require('./config')
+var config = require('./config/config')
 var assets = require('./config/assets')
 
 const PATH_TO_TEMPLATES = '.' ;

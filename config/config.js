@@ -1,8 +1,8 @@
 const config = {}
 
 config.project = {
-    title: 'dvcxxx',
-    type: 'changeovertime'
+    id: 'dvc000',
+    type: 'simplemap'
 }
 
 module.exports = config;

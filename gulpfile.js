@@ -4,10 +4,11 @@ const babelify = require("babelify")
 const source = require("vinyl-source-stream")
 const nunjucks = require('gulp-nunjucks')
 const del = require('del')
-const config = require('./config')
+const config = require('./config/config')
 const assetsConfig = require('./config/assets')
 
 const type = config.project.type
+const id = config.project.id
 
 function copyCommonCSS() {
     let cssList = [];
