@@ -96,7 +96,7 @@ function scripts() {
 }
 
 function watchFiles() {
-    watch(`./public/${id}/${type}/scripts/script.js`, scripts)
+    watch(`./public/${type}/scripts/script.js`, scripts)
 }
 
 
