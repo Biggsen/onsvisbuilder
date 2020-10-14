@@ -64,4 +64,10 @@ assets.line = {
     ]
 }
 
+assets.plain_beeswarm = {
+    js: [
+        { link: 'common/js/modernizr.svg.min.js' }
+    ]
+}
+
 module.exports = assets;
