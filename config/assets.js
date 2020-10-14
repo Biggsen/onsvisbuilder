@@ -34,4 +34,18 @@ assets.changeovertime = {
     ]
 }
 
+assets.bar_and_line = {
+    css: [
+        { link: 'common/css/globalstyles.css' },
+        { link: 'bar_and_line/css/styles.css' }
+    ],
+    js: [
+        { link: 'https://cdn.ons.gov.uk/vendor/d3/4.2.7/d3.min.js' },
+        { link: 'common/js/modernizr.svg.min.js' },
+        { link: 'https://cdn.ons.gov.uk/vendor/pym/1.3.2/pym.min.js' },
+        { link: 'common/js/d3v4jetpack.js' },
+        { link: 'common/js/swoopy-drag-d3v4.js' },
+        { link: 'bar_and_line/compiled/js/main.js' }
+    ]
+}
 module.exports = assets;
