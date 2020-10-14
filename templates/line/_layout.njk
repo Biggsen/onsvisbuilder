@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Line chart</title>
+
+    <meta name="description" content="">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no" />
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    {% for css in css %}
+        <link rel="stylesheet" href="{{ css.link }}">
+    {% endfor %}
+
+</head>
+
+
+<body>
+
+{% block content %}
+{% endblock %}
+
+    {% for js in js %}
+        <script src="{{ js.link }}"></script>
+    {% endfor %}
+
+</body>
+</html>

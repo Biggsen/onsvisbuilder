@@ -1,0 +1,27 @@
+{% extends './_layout.njk' %}
+{% block content %}
+  <div id="graphic">
+    <img src="fallback.png" alt="[Chart]" />
+</div>
+
+<h6 id="source"></h6>
+
+<div id="keypoints">
+    <p></p>
+</div>
+ <h6>Notes:</h6>
+ <ol>
+   <li>This note comes first.</li>
+   <li>The Renewable Energy Directive (RED) uses a slightly different definition of renewable energy than is used in the ONS Environmental Accounts.
+     <a href="https://www.gov.uk/government/publications/renewable-energy-statistics-data-sources-and-methodologies"> Further details on the RED methodology can be found in the methodology document.
+     </a>
+   </li>
+ </ol>
+ <h6>Download this chart</h6>
+ <a class="btn btn--primary" href="download.png" download>Image</a>
+ <a class="btn btn--primary" href="data.xlsx" target="_blank">.xls</a>
+ <a class="btn btn--primary" href="data.csv" target="_blank">.csv</a>
+</div>
+{% endblock %}
+
+
