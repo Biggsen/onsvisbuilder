@@ -4,6 +4,8 @@
 var graphic = d3.select('#graphic');
 var keypoints = d3.select('#keypoints');
 var pymChild = null;
+var dvc;
+var graphic_data;
 
 function drawGraphic(width) {
   var threshold_md = 788;
@@ -118,9 +120,9 @@ function drawGraphic(width) {
   } // do some code to overwrite blanks with the last known point
 
 
-  keys = d3.keys(lines);
+  var keys = d3.keys(lines);
 
-  for (i = 0; i < keys.length; i++) {
+  var _loop = function _loop(i) {
     // console.log(lines[keys[i]])
     lines[keys[i]].forEach(function (d, j) {
       if (d.amt != "null") {
@@ -130,6 +132,10 @@ function drawGraphic(width) {
         d.amt = lines[keys[i]][counter].amt;
       }
     });
+  };
+
+  for (var i = 0; i < keys.length; i++) {
+    _loop(i);
   } //y domain calculations : zero to intelligent max choice, or intelligent min and max choice,  or interval chosen manually
 
 
@@ -273,10 +279,10 @@ function drawGraphic(width) {
         d3.select("#keypoints").append("p").style("font-size", "12px").style("font-weight", 400).text(dvc.essential.annotationBullet[i]);
       }); // end foreach
     } else {
-      annotations = dvc.essential.annotationsChart; // For elements with time series
+      var annotations = dvc.essential.annotationsChart; // For elements with time series
 
-      for (i = 0; i < annotations.length; i++) {
-        annotations[i].xVal = new Date(annotations[i].xVal);
+      for (var _i = 0; _i < annotations.length; _i++) {
+        annotations[_i].xVal = new Date(annotations[_i].xVal);
       }
 
       var swoopy = d3.swoopyDrag().x(function (d) {

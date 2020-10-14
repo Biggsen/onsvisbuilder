@@ -2,6 +2,8 @@
 var graphic = d3.select('#graphic');
 var keypoints = d3.select('#keypoints');
 var pymChild = null;
+let dvc;
+let graphic_data;
 
 function drawGraphic(width) {
     var threshold_md = 788;
@@ -120,8 +122,8 @@ function drawGraphic(width) {
 
 
     // do some code to overwrite blanks with the last known point
-    keys=d3.keys(lines)
-    for(i=0;i<keys.length;i++){
+    let keys=d3.keys(lines)
+    for(let i=0;i<keys.length;i++){
         // console.log(lines[keys[i]])
         lines[keys[i]].forEach(function(d,j){
         if(d.amt!="null"){
@@ -407,10 +409,10 @@ function drawGraphic(width) {
 
         } else {
 
-            annotations = dvc.essential.annotationsChart;
+            let annotations = dvc.essential.annotationsChart;
 
             // For elements with time series
-            for(i=0; i < annotations.length  ;i++) {
+            for(let i=0; i < annotations.length  ;i++) {
                 annotations[i].xVal = new Date(annotations[i].xVal);
             }
 
