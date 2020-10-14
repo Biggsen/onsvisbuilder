@@ -65,6 +65,9 @@ assets.line = {
 }
 
 assets.plain_beeswarm = {
+    css: [
+        { link: '' }
+    ],
     js: [
         { link: 'common/js/modernizr.svg.min.js' }
     ]
