@@ -5,6 +5,9 @@ Project Types
 --------------------
 simplemap
 changeovertime
+bar_and_line
+line
+plain_beeswarm
 --------------------
 */
 

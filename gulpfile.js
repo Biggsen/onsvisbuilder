@@ -1,6 +1,8 @@
 const { src, dest, series, watch } = require('gulp')
-const browserify = require("browserify")
-const babelify = require("babelify")
+const browserify = require('browserify')
+const babelify = require('babelify')
+const sass = require('gulp-sass')
+sass.compiler = require('node-sass')
 const source = require("vinyl-source-stream")
 const nunjucks = require('gulp-nunjucks')
 const del = require('del')
@@ -47,9 +49,9 @@ function copyCommonJS() {
 
 function copyCSS() {
     return src([
-        `public/${type}/css/*.css`
+        `public/${type}/compiled/css/*.css`
     ])
-    .pipe(dest(`dist/${id}/${type}/css`))
+    .pipe(dest(`dist/${id}/${type}/compiled/css`))
 }
 
 function copyData() {
@@ -79,6 +81,12 @@ function compileHTML() {
         .pipe(dest(`./dist/${id}`))
 }
 
+function compileCSS() {
+    return src(`./public/${type}/sass/**/*.scss`)
+    .pipe(sass().on('error', sass.logError))
+    .pipe(dest(`./public/${type}/compiled/css`));
+}
+
 function clean() {
     return del(`./dist`)
 }
@@ -97,6 +105,7 @@ function scripts() {
 
 function watchFiles() {
     watch(`./public/${type}/scripts/script.js`, scripts)
+    watch(`./public/${type}/sass/**/*.scss`, compileCSS)
 }
 
 
@@ -107,5 +116,6 @@ exports.clean = clean
 exports.assets = copyAssets
 exports.html = compileHTML
 exports.scripts = scripts
+exports.css = compileCSS
 exports.watch = watchFiles
 exports.build = build

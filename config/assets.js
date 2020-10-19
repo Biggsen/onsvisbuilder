@@ -4,7 +4,7 @@ assets.simplemap = {
     css: [
         { link: 'common/css/mapbox-gl.css' },
         { link: 'common/css/chosen.css' },
-        { link: 'simplemap/css/styles.css' }
+        { link: 'simplemap/compiled/css/main.css' }
     ],
     js: [
         { link: 'https://cdn.ons.gov.uk/vendor/d3/4.2.7/d3.min.js' },
