@@ -1,3 +1,6 @@
+import debugLog from '../../common/js/utils'
+const debug = true;
+
 // Describe topojson
 const topojson = require("topojson")
 
@@ -36,6 +39,8 @@ if(Modernizr.webgl) {
 
 
     function ready (error, data, config, geog){
+
+        debugLog(debug,"ready")
 
         //Set up global variables
         const dvc = config.ons;
@@ -607,6 +612,7 @@ if(Modernizr.webgl) {
         pymChild.sendHeight();
 
         function addFullscreen() {
+            debugLog(debug,"addFullScreen")
 
             currentBody = d3.select("#map").style("height");
             d3.select(".mapboxgl-ctrl-fullscreen").on("click", setbodyheight)
@@ -614,6 +620,7 @@ if(Modernizr.webgl) {
         }
 
         function setbodyheight() {
+            debugLog(debug,"setbodyheight")
 
             d3.select("#map").style("height","100%");
 
@@ -626,6 +633,7 @@ if(Modernizr.webgl) {
 
 
         function exitHandler() {
+            debugLog(debug,"exitHandler")
 
             if (document.webkitIsFullScreen === false) {
                 shrinkbody();
@@ -637,12 +645,14 @@ if(Modernizr.webgl) {
         }
 
         function shrinkbody() {
+            debugLog(debug,"shrinkbody")
 
             d3.select("#map").style("height",currentBody);
             pymChild.sendHeight();
         }
 
         function geolocate() {
+            debugLog(debug,"geolocate")
 
             dataLayer.push({
                 'event': 'geoLocate',
@@ -659,6 +669,7 @@ if(Modernizr.webgl) {
         }
 
         function success(pos) {
+            debugLog(debug,"success")
 
             crd = pos.coords;
 
@@ -679,6 +690,7 @@ if(Modernizr.webgl) {
         };
 
         function selectlist(datacsv) {
+            debugLog(debug,"selectlist")
 
             var areacodes =  datacsv.map(function(d) { return d.AREACD; });
             var areanames =  datacsv.map(function(d) { return d.AREANM; });
