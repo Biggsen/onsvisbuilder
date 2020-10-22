@@ -13240,14 +13240,14 @@ module.exports.POLAR_RADIUS = 6356752.3142;
 },{}],84:[function(require,module,exports){
 "use strict";
 
-function debug(DEBUG, msg) {
+function debugLog(DEBUG, msg) {
   if (DEBUG) {
     console.log(msg);
   }
 } //For express.js, we need to export this module
 
 
-module.exports = debug;
+module.exports = debugLog;
 
 },{}],85:[function(require,module,exports){
 "use strict";
@@ -13279,6 +13279,28 @@ var debug = true; // Describe topojson
 var topojson = require("topojson"); // Describe Simple Statistics
 
 
+/*
+Function list
+-------------------------------------------------------------
+ready (error, data, config, geog)
+    defineBreaks()
+    setupScales()
+    defineLayers()
+    updateLayers()
+    onchange(i)
+    onselect()
+    onMove(e)
+    onLeave()
+    onClick(e)
+    disableMouseEvents()
+    enableMouseEvents()
+    selectArea(code)
+    zoomToArea(code)
+    resetZoom()
+    setAxisVal(code)
+    hideAxisVal()
+    createKey(config)
+*/
 //test if browser supports webGL
 if (Modernizr.webgl) {
   var ready = function ready(error, data, config, geog) {
@@ -13380,6 +13402,7 @@ if (Modernizr.webgl) {
     var breaks = [];
 
     function defineBreaks() {
+      (0, _utils["default"])(debug, "defineBreaks");
       data.forEach(function (d) {
         rateById[d.AREACD] = +d[variable];
         areaById[d.AREACD] = d.AREANM;
@@ -13425,8 +13448,9 @@ if (Modernizr.webgl) {
     var colour;
 
     function setupScales() {
-      //set up d3 color scales
+      (0, _utils["default"])(debug, "setupScales"); //set up d3 color scales
       //Load colours
+
       if (typeof dvc.varcolour === 'string') {
         color = _chromaJs["default"].scale(dvc.varcolour).colors(dvc.numberBreaks);
         colour = [];
@@ -13442,6 +13466,7 @@ if (Modernizr.webgl) {
     }
 
     function defineLayers() {
+      (0, _utils["default"])(debug, "defineLayers");
       map.addSource('area', {
         'type': 'geojson',
         'data': areas
@@ -13537,7 +13562,8 @@ if (Modernizr.webgl) {
     }
 
     function updateLayers() {
-      //update properties to the geojson based on the csv file we've read in
+      (0, _utils["default"])(debug, "updateLayers"); //update properties to the geojson based on the csv file we've read in
+
       areas.features.map(function (d, i) {
         if (!isNaN(rateById[d.properties.AREACD])) {
           d.properties.fill = color(rateById[d.properties.AREACD]);
@@ -13559,13 +13585,14 @@ if (Modernizr.webgl) {
     }
 
     function onchange(i) {
+      (0, _utils["default"])(debug, "onchange");
       a = i;
       defineBreaks();
       setupScales();
       createKey(config);
 
       if (selected) {
-        setAxisVal($("#areaselect").val());
+        setAxisVal($("#areaselect-select").val());
       }
 
       updateLayers();
@@ -13576,12 +13603,14 @@ if (Modernizr.webgl) {
     }
 
     function onselect() {
+      (0, _utils["default"])(debug, "onselect");
       a = $(".dropdown").val();
       onchange(a);
     }
 
     function onMove(e) {
-      // console.log(e)
+      (0, _utils["default"])(debug, "onMove"); // console.log(e)
+
       map.getCanvasContainer().style.cursor = 'pointer';
       newAREACD = e.features[0].properties.AREACD;
 
@@ -13604,6 +13633,7 @@ if (Modernizr.webgl) {
     ;
 
     function onLeave() {
+      (0, _utils["default"])(debug, "onLeave");
       map.getCanvasContainer().style.cursor = null;
       map.setFilter("state-fills-hover", ["==", "AREACD", ""]);
       oldAREACD = "";
@@ -13614,6 +13644,7 @@ if (Modernizr.webgl) {
     ;
 
     function onClick(e) {
+      (0, _utils["default"])(debug, "onClick");
       disableMouseEvents();
       newAREACD = e.features[0].properties.AREACD;
 
@@ -13633,12 +13664,14 @@ if (Modernizr.webgl) {
     ;
 
     function disableMouseEvents() {
+      (0, _utils["default"])(debug, "disableMouseEvents");
       map.off("mousemove", "area", onMove);
       map.off("mouseleave", "area", onLeave);
       selected = true;
     }
 
     function enableMouseEvents() {
+      (0, _utils["default"])(debug, "enableMouseEvents");
       map.on("mousemove", "area", onMove);
       map.on("click", "area", onClick);
       map.on("mouseleave", "area", onLeave);
@@ -13646,6 +13679,7 @@ if (Modernizr.webgl) {
     }
 
     function selectArea(code) {
+      (0, _utils["default"])(debug, "selectArea");
       $("#areaselect").val(code).trigger('chosen:updated');
       d3.select('abbr').on('keypress', function (evt) {
         if (d3.event.keyCode == 13 || d3.event.keyCode == 32) {
@@ -13658,6 +13692,7 @@ if (Modernizr.webgl) {
     }
 
     function zoomToArea(code) {
+      (0, _utils["default"])(debug, "zoomToArea");
       var specificpolygon = areas.features.filter(function (d) {
         return d.properties.AREACD == code;
       });
@@ -13673,10 +13708,12 @@ if (Modernizr.webgl) {
     }
 
     function resetZoom() {
+      (0, _utils["default"])(debug, "resetZoom");
       map.fitBounds([[bounds[0], bounds[1]], [bounds[2], bounds[3]]]);
     }
 
     function setAxisVal(code) {
+      (0, _utils["default"])(debug, "setAxisVal");
       d3.select('#accessibilityInfo').select('p.visuallyhidden').text(function () {
         if (!isNaN(rateById[code])) {
           return areaById[code] + ": " + displayformat(rateById[code]) + " " + dvc.varunit;
@@ -13719,11 +13756,13 @@ if (Modernizr.webgl) {
     }
 
     function hideaxisVal() {
+      (0, _utils["default"])(debug, "hideaxisVal");
       d3.select("#currLine").style("opacity", 0);
       d3.select("#currVal").text("").style("opacity", 0);
     }
 
     function createKey(config) {
+      (0, _utils["default"])(debug, "createKey");
       d3.select("#keydiv").selectAll("*").remove();
       var keywidth = d3.select("#keydiv").node().getBoundingClientRect().width;
       var svgkey = d3.select("#keydiv").append("svg").attr("id", "key").attr('aria-hidden', true).attr("width", keywidth).attr("height", 75);
@@ -13871,15 +13910,20 @@ if (Modernizr.webgl) {
       }).text(function (d) {
         return d[0];
       });
-      $('#areaselect').chosen({
-        placeholder_text_single: "Select an area",
-        allow_single_deselect: true
-      });
+
+      _accessibleAutocomplete["default"].enhanceSelectElement({
+        selectElement: document.querySelector('#areaselect'),
+        showAllValues: true
+      }); //$('#areaselect').chosen({placeholder_text_single:"Select an area",allow_single_deselect:true})
+
+
       d3.select('input.chosen-search-input').attr('id', 'chosensearchinput');
       d3.select('div.chosen-search').insert('label', 'input.chosen-search-input').attr('class', 'visuallyhidden').attr('for', 'chosensearchinput').html("Type to select an area");
-      $('#areaselect').on('change', function () {
+      $('#areaselect-select').on('change', function () {
+        (0, _utils["default"])(debug, "areaselect-select change");
+
         if ($('#areaselect').val() != "") {
-          var areacode = $('#areaselect').val();
+          var areacode = $('#areaselect-select').val();
           disableMouseEvents();
           map.setFilter("state-fills-hover", ["==", "AREACD", areacode]);
           selectArea(areacode);

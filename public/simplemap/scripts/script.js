@@ -374,7 +374,7 @@ if(Modernizr.webgl) {
             createKey(config);
 
             if(selected) {
-                setAxisVal($("#areaselect").val());
+                setAxisVal($("#areaselect-select").val());
             }
             updateLayers();
 
@@ -760,15 +760,24 @@ if(Modernizr.webgl) {
                 .attr("id",function(d){return d[1]})
                 .text(function(d){ return d[0]});
 
-            $('#areaselect').chosen({placeholder_text_single:"Select an area",allow_single_deselect:true})
+            accessibleAutocomplete.enhanceSelectElement({
+                selectElement: document.querySelector('#areaselect'),
+                showAllValues: true
+            })
+
+            //$('#areaselect').chosen({placeholder_text_single:"Select an area",allow_single_deselect:true})
 
             d3.select('input.chosen-search-input').attr('id','chosensearchinput')
             d3.select('div.chosen-search').insert('label','input.chosen-search-input').attr('class','visuallyhidden').attr('for','chosensearchinput').html("Type to select an area")
 
-            $('#areaselect').on('change',function(){
+            $('#areaselect-select').on('change',function(){
+                debugLog(debug,"areaselect-select change")
+
+
+
 
                 if($('#areaselect').val() != "") {
-                    let areacode = $('#areaselect').val()
+                    let areacode = $('#areaselect-select').val()
 
                     disableMouseEvents();
 
