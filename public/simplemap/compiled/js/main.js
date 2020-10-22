@@ -13294,12 +13294,14 @@ ready (error, data, config, geog)
     onClick(e)
     disableMouseEvents()
     enableMouseEvents()
+    inputCurrentArea(code)
     selectArea(code)
     zoomToArea(code)
     resetZoom()
     setAxisVal(code)
     hideAxisVal()
     createKey(config)
+    handleAreaSelect(selection)
 */
 //test if browser supports webGL
 if (Modernizr.webgl) {
@@ -13310,7 +13312,10 @@ if (Modernizr.webgl) {
     var oldAREACD = "";
     var newAREACD = '';
     var selected = false;
-    var firsthover = true; //Get column names
+    var firsthover = true;
+    var areacodes;
+    var areanames;
+    var menuarea; //Get column names
 
     var variable = null;
 
@@ -13609,8 +13614,7 @@ if (Modernizr.webgl) {
     }
 
     function onMove(e) {
-      (0, _utils["default"])(debug, "onMove"); // console.log(e)
-
+      (0, _utils["default"])(debug, "onMove");
       map.getCanvasContainer().style.cursor = 'pointer';
       newAREACD = e.features[0].properties.AREACD;
 
@@ -13622,15 +13626,13 @@ if (Modernizr.webgl) {
         firsthover = false;
       }
 
-      if (newAREACD != oldAREACD) {
+      if (newAREACD !== oldAREACD) {
         oldAREACD = e.features[0].properties.AREACD;
         map.setFilter("state-fills-hover", ["==", "AREACD", e.features[0].properties.AREACD]);
-        selectArea(e.features[0].properties.AREACD);
+        inputCurrentArea(e.features[0].properties.AREACD);
         setAxisVal(e.features[0].properties.AREACD);
       }
     }
-
-    ;
 
     function onLeave() {
       (0, _utils["default"])(debug, "onLeave");
@@ -13641,16 +13643,15 @@ if (Modernizr.webgl) {
       hideaxisVal();
     }
 
-    ;
-
     function onClick(e) {
       (0, _utils["default"])(debug, "onClick");
-      disableMouseEvents();
       newAREACD = e.features[0].properties.AREACD;
 
-      if (newAREACD != oldAREACD) {
+      if (!selected || newAREACD !== oldAREACD) {
+        disableMouseEvents();
         oldAREACD = e.features[0].properties.AREACD;
         map.setFilter("state-fills-hover", ["==", "AREACD", e.features[0].properties.AREACD]);
+        inputCurrentArea(e.features[0].properties.AREACD);
         selectArea(e.features[0].properties.AREACD);
         setAxisVal(e.features[0].properties.AREACD);
       }
@@ -13660,8 +13661,6 @@ if (Modernizr.webgl) {
         'selected': newAREACD
       });
     }
-
-    ;
 
     function disableMouseEvents() {
       (0, _utils["default"])(debug, "disableMouseEvents");
@@ -13678,17 +13677,21 @@ if (Modernizr.webgl) {
       selected = false;
     }
 
-    function selectArea(code) {
-      (0, _utils["default"])(debug, "selectArea");
-      $("#areaselect").val(code).trigger('chosen:updated');
-      d3.select('abbr').on('keypress', function (evt) {
-        if (d3.event.keyCode == 13 || d3.event.keyCode == 32) {
-          console.log('clear');
-          $("#areaselect").val("").trigger('chosen:updated');
-          onLeave();
-          resetZoom();
+    function inputCurrentArea(code) {
+      (0, _utils["default"])(debug, "inputCurrentArea");
+      var areaLabel = "";
+      menuarea.forEach(function (area) {
+        if (area[1] === code) {
+          areaLabel = area[0];
         }
       });
+      $("#areaselect").val(areaLabel);
+      $("#areaselect__listbox").hide();
+    }
+
+    function selectArea(code) {
+      (0, _utils["default"])(debug, "selectArea");
+      $('#areaselect-select').val(code).trigger('change');
     }
 
     function zoomToArea(code) {
@@ -13881,21 +13884,20 @@ if (Modernizr.webgl) {
 
       disableMouseEvents();
       map.setFilter("state-fills-hover", ["==", "AREACD", features[0].properties.AREACD]);
+      inputCurrentArea(features[0].properties.AREACD);
       selectArea(features[0].properties.AREACD);
       setAxisVal(features[0].properties.AREACD);
     }
 
-    ;
-
     function selectlist(datacsv) {
       (0, _utils["default"])(debug, "selectlist");
-      var areacodes = datacsv.map(function (d) {
+      areacodes = datacsv.map(function (d) {
         return d.AREACD;
       });
-      var areanames = datacsv.map(function (d) {
+      areanames = datacsv.map(function (d) {
         return d.AREANM;
       });
-      var menuarea = d3.zip(areanames, areacodes).sort(function (a, b) {
+      menuarea = d3.zip(areanames, areacodes).sort(function (a, b) {
         return d3.ascending(a[0], b[0]);
       }); // Build option menu for occupations
 
@@ -13912,21 +13914,46 @@ if (Modernizr.webgl) {
       });
 
       _accessibleAutocomplete["default"].enhanceSelectElement({
+        autoselect: false,
         selectElement: document.querySelector('#areaselect'),
-        showAllValues: true
+        showAllValues: true,
+        onConfirm: function onConfirm(val) {
+          return handleAreaSelect(val);
+        }
       }); //$('#areaselect').chosen({placeholder_text_single:"Select an area",allow_single_deselect:true})
 
 
       d3.select('input.chosen-search-input').attr('id', 'chosensearchinput');
       d3.select('div.chosen-search').insert('label', 'input.chosen-search-input').attr('class', 'visuallyhidden').attr('for', 'chosensearchinput').html("Type to select an area");
-      $('#areaselect-select').on('change', function () {
+      var areaSelector = $('#areaselect-select');
+      var autocompleteInput = $('#areaselect');
+      var autocompleteList = $('#areaselect__listbox');
+      autocompleteInput.on('focus', function () {
+        autocompleteList.attr('style', '');
+      });
+      autocompleteInput.change(function () {
+        if (autocompleteInput.val() === "") {
+          onLeave();
+          areaSelector.val('').trigger('change');
+        }
+      });
+
+      function handleAreaSelect(selection) {
+        for (var i = 0; i < areaSelector.children().length; i++) {
+          if (areaSelector.children()[i].text === selection) {
+            areaSelector.val($(areaSelector.children()[i]).val());
+            areaSelector.trigger('change');
+          }
+        }
+      }
+
+      areaSelector.on('change', function () {
         (0, _utils["default"])(debug, "areaselect-select change");
 
-        if ($('#areaselect').val() != "") {
-          var areacode = $('#areaselect-select').val();
+        if (areaSelector.val() !== "") {
+          var areacode = areaSelector.val();
           disableMouseEvents();
           map.setFilter("state-fills-hover", ["==", "AREACD", areacode]);
-          selectArea(areacode);
           setAxisVal(areacode);
           zoomToArea(areacode);
           dataLayer.push({
@@ -13944,23 +13971,11 @@ if (Modernizr.webgl) {
           resetZoom();
         }
       });
-    }
+    } //end selectlist
 
-    ; //end selectlist
   }; //end ready
 
 
-  // const countries = [
-  //     'France',
-  //     'Germany',
-  //     'United Kingdom'
-  // ]
-  // accessibleAutocomplete({
-  //     element: document.querySelector('#my-autocomplete-container'),
-  //     id: 'my-autocomplete', // To match it to the existing <label>.
-  //     source: countries,
-  //     showAllValues: true
-  // })
   //setup pymjs
   var pymChild = new pym.Child();
   var rateById = {};

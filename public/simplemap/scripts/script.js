@@ -37,12 +37,14 @@ ready (error, data, config, geog)
     onClick(e)
     disableMouseEvents()
     enableMouseEvents()
+    inputCurrentArea(code)
     selectArea(code)
     zoomToArea(code)
     resetZoom()
     setAxisVal(code)
     hideAxisVal()
     createKey(config)
+    handleAreaSelect(selection)
 */
 
 //test if browser supports webGL
@@ -72,6 +74,10 @@ if(Modernizr.webgl) {
         let newAREACD = '';
         let selected = false;
         let firsthover = true;
+
+        let areacodes;
+        let areanames;
+        let menuarea;
 
         //Get column names
         let variable = null;
@@ -166,8 +172,6 @@ if(Modernizr.webgl) {
         };
 
         let breaks = [];
-
-
 
         function defineBreaks(){
             debugLog(debug,"defineBreaks")
@@ -363,7 +367,6 @@ if(Modernizr.webgl) {
 
         }
 
-
         function onchange(i) {
             debugLog(debug,"onchange")
 
@@ -390,16 +393,11 @@ if(Modernizr.webgl) {
             onchange(a);
         }
 
-
         function onMove(e) {
-            debugLog(debug,"onMove")
-            // console.log(e)
-
+            debugLog(debug,"onMove");
             map.getCanvasContainer().style.cursor = 'pointer';
 
             newAREACD = e.features[0].properties.AREACD;
-
-
 
             if(firsthover) {
                 dataLayer.push({
@@ -410,38 +408,37 @@ if(Modernizr.webgl) {
                 firsthover = false;
             }
 
-
-            if(newAREACD != oldAREACD) {
+            if(newAREACD !== oldAREACD) {
                 oldAREACD = e.features[0].properties.AREACD;
                 map.setFilter("state-fills-hover", ["==", "AREACD", e.features[0].properties.AREACD]);
 
-                selectArea(e.features[0].properties.AREACD);
+                inputCurrentArea(e.features[0].properties.AREACD);
                 setAxisVal(e.features[0].properties.AREACD);
 
             }
-        };
-
+        }
 
         function onLeave() {
-            debugLog(debug,"onLeave")
+            debugLog(debug,"onLeave");
 
             map.getCanvasContainer().style.cursor = null;
             map.setFilter("state-fills-hover", ["==", "AREACD", ""]);
             oldAREACD = "";
             $("#areaselect").val(null).trigger('chosen:updated');
             hideaxisVal();
-        };
+        }
 
         function onClick(e) {
-            debugLog(debug,"onClick")
+            debugLog(debug,"onClick");
 
-            disableMouseEvents();
             newAREACD = e.features[0].properties.AREACD;
 
-            if(newAREACD != oldAREACD) {
+            if(!selected || newAREACD !== oldAREACD) {
+                disableMouseEvents();
                 oldAREACD = e.features[0].properties.AREACD;
                 map.setFilter("state-fills-hover", ["==", "AREACD", e.features[0].properties.AREACD]);
 
+                inputCurrentArea(e.features[0].properties.AREACD);
                 selectArea(e.features[0].properties.AREACD);
                 setAxisVal(e.features[0].properties.AREACD);
             }
@@ -450,7 +447,7 @@ if(Modernizr.webgl) {
                 'event':'mapClickSelect',
                 'selected': newAREACD
             })
-        };
+        }
 
         function disableMouseEvents() {
             debugLog(debug,"disableMouseEvents")
@@ -471,20 +468,22 @@ if(Modernizr.webgl) {
             selected = false;
         }
 
-        function selectArea(code) {
-            debugLog(debug,"selectArea")
-
-            $("#areaselect").val(code).trigger('chosen:updated');
-            d3.select('abbr').on('keypress',function(evt){
-                if(d3.event.keyCode==13 || d3.event.keyCode==32){
-                    console.log('clear')
-                    $("#areaselect").val("").trigger('chosen:updated');
-                    onLeave();
-                    resetZoom();
+        function inputCurrentArea(code) {
+            debugLog(debug, "inputCurrentArea")
+            let areaLabel = "";
+            menuarea.forEach(area => {
+                if (area[1] === code) {
+                    areaLabel = area[0];
                 }
-            })
+            });
+            $("#areaselect").val(areaLabel);
+            $("#areaselect__listbox").hide();
         }
 
+        function selectArea(code) {
+            debugLog(debug, "selectArea")
+            $('#areaselect-select').val(code).trigger('change');
+        }
 
         function zoomToArea(code) {
             debugLog(debug,"zoomToArea")
@@ -506,11 +505,8 @@ if(Modernizr.webgl) {
 
         }
 
-
-
         function setAxisVal(code) {
             debugLog(debug,"setAxisVal")
-
             d3.select('#accessibilityInfo').select('p.visuallyhidden')
             .text(function(){
                 if (!isNaN(rateById[code])) {
@@ -680,7 +676,6 @@ if(Modernizr.webgl) {
 
         }
 
-
         function exitHandler() {
             debugLog(debug,"exitHandler")
 
@@ -734,16 +729,17 @@ if(Modernizr.webgl) {
 
             map.setFilter("state-fills-hover", ["==", "AREACD", features[0].properties.AREACD]);
 
+            inputCurrentArea(features[0].properties.AREACD);
             selectArea(features[0].properties.AREACD);
             setAxisVal(features[0].properties.AREACD);
-        };
+        }
 
         function selectlist(datacsv) {
             debugLog(debug,"selectlist")
 
-            var areacodes =  datacsv.map(function(d) { return d.AREACD; });
-            var areanames =  datacsv.map(function(d) { return d.AREANM; });
-            var menuarea = d3.zip(areanames,areacodes).sort(function(a, b){ return d3.ascending(a[0], b[0]); });
+            areacodes =  datacsv.map(function(d) { return d.AREACD; });
+            areanames =  datacsv.map(function(d) { return d.AREANM; });
+            menuarea = d3.zip(areanames,areacodes).sort(function(a, b){ return d3.ascending(a[0], b[0]); });
 
             // Build option menu for occupations
             var optns = d3.select("#selectNav").append("div").attr("id","sel").append("select")
@@ -761,29 +757,51 @@ if(Modernizr.webgl) {
                 .text(function(d){ return d[0]});
 
             accessibleAutocomplete.enhanceSelectElement({
+                autoselect: false,
                 selectElement: document.querySelector('#areaselect'),
-                showAllValues: true
-            })
+                showAllValues: true,
+                onConfirm: (val) => handleAreaSelect(val)
+            });
 
             //$('#areaselect').chosen({placeholder_text_single:"Select an area",allow_single_deselect:true})
 
             d3.select('input.chosen-search-input').attr('id','chosensearchinput')
             d3.select('div.chosen-search').insert('label','input.chosen-search-input').attr('class','visuallyhidden').attr('for','chosensearchinput').html("Type to select an area")
 
-            $('#areaselect-select').on('change',function(){
-                debugLog(debug,"areaselect-select change")
+            const areaSelector = $('#areaselect-select');
 
+            const autocompleteInput = $('#areaselect');
+            const autocompleteList = $('#areaselect__listbox');
 
+            autocompleteInput.on('focus', function() {
+               autocompleteList.attr('style', '');
+            });
 
+            autocompleteInput.change(function() {
+                if (autocompleteInput.val() === "") {
+                    onLeave();
+                    areaSelector.val('').trigger('change');
+                }
+            });
 
-                if($('#areaselect').val() != "") {
-                    let areacode = $('#areaselect-select').val()
+            function handleAreaSelect(selection) {
+                for (let i=0; i < areaSelector.children().length; i++) {
+                    if (areaSelector.children()[i].text === selection) {
+                        areaSelector.val($(areaSelector.children()[i]).val());
+                        areaSelector.trigger('change');
+                    }
+                }
+            }
 
+            areaSelector.on('change',function(){
+                debugLog(debug,"areaselect-select change");
+
+                if(areaSelector.val() !== "") {
+                    let areacode = areaSelector.val();
                     disableMouseEvents();
 
                     map.setFilter("state-fills-hover", ["==", "AREACD", areacode]);
 
-                    selectArea(areacode);
                     setAxisVal(areacode);
                     zoomToArea(areacode);
 
@@ -795,7 +813,7 @@ if(Modernizr.webgl) {
                     dataLayer.push({
                         'event': 'deselectCross',
                         'selected': 'deselect'
-                    })
+                    });
 
                     enableMouseEvents();
                     hideaxisVal();
@@ -803,7 +821,7 @@ if(Modernizr.webgl) {
                     resetZoom();
                 }
             });
-        }; //end selectlist
+        } //end selectlist
     } //end ready
 
 } else {
