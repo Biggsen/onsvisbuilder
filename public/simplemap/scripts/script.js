@@ -19,8 +19,33 @@ import mapboxgl from 'mapbox-gl'
 // Describe Turf
 import * as turf from 'turf'
 
-//test if browser supports webGL
+// autocomplete
+import accessibleAutocomplete from 'accessible-autocomplete'
 
+/*
+Function list
+-------------------------------------------------------------
+ready (error, data, config, geog)
+    defineBreaks()
+    setupScales()
+    defineLayers()
+    updateLayers()
+    onchange(i)
+    onselect()
+    onMove(e)
+    onLeave()
+    onClick(e)
+    disableMouseEvents()
+    enableMouseEvents()
+    selectArea(code)
+    zoomToArea(code)
+    resetZoom()
+    setAxisVal(code)
+    hideAxisVal()
+    createKey(config)
+*/
+
+//test if browser supports webGL
 if(Modernizr.webgl) {
 
     //setup pymjs
@@ -39,7 +64,6 @@ if(Modernizr.webgl) {
 
 
     function ready (error, data, config, geog){
-
         debugLog(debug,"ready")
 
         //Set up global variables
@@ -146,6 +170,8 @@ if(Modernizr.webgl) {
 
 
         function defineBreaks(){
+            debugLog(debug,"defineBreaks")
+
 
             data.forEach(function(d) {
                 rateById[d.AREACD] = +d[variable];
@@ -191,6 +217,8 @@ if(Modernizr.webgl) {
         let colour;
 
         function setupScales() {
+            debugLog(debug,"setupScales")
+
             //set up d3 color scales
             //Load colours
 
@@ -211,6 +239,7 @@ if(Modernizr.webgl) {
         }
 
         function defineLayers() {
+            debugLog(debug,"defineLayers")
 
             map.addSource('area', { 'type': 'geojson', 'data': areas });
 
@@ -311,6 +340,7 @@ if(Modernizr.webgl) {
 
 
         function updateLayers() {
+            debugLog(debug,"updateLayers")
 
             //update properties to the geojson based on the csv file we've read in
             areas.features.map(function(d,i) {
@@ -335,6 +365,7 @@ if(Modernizr.webgl) {
 
 
         function onchange(i) {
+            debugLog(debug,"onchange")
 
             a = i;
 
@@ -354,12 +385,14 @@ if(Modernizr.webgl) {
         }
 
         function onselect() {
+            debugLog(debug,"onselect")
             a = $(".dropdown").val();
             onchange(a);
         }
 
 
         function onMove(e) {
+            debugLog(debug,"onMove")
             // console.log(e)
 
             map.getCanvasContainer().style.cursor = 'pointer';
@@ -390,6 +423,8 @@ if(Modernizr.webgl) {
 
 
         function onLeave() {
+            debugLog(debug,"onLeave")
+
             map.getCanvasContainer().style.cursor = null;
             map.setFilter("state-fills-hover", ["==", "AREACD", ""]);
             oldAREACD = "";
@@ -398,6 +433,8 @@ if(Modernizr.webgl) {
         };
 
         function onClick(e) {
+            debugLog(debug,"onClick")
+
             disableMouseEvents();
             newAREACD = e.features[0].properties.AREACD;
 
@@ -416,6 +453,8 @@ if(Modernizr.webgl) {
         };
 
         function disableMouseEvents() {
+            debugLog(debug,"disableMouseEvents")
+
             map.off("mousemove", "area", onMove);
             map.off("mouseleave", "area", onLeave);
 
@@ -423,6 +462,8 @@ if(Modernizr.webgl) {
         }
 
         function enableMouseEvents() {
+            debugLog(debug,"enableMouseEvents")
+
             map.on("mousemove", "area", onMove);
             map.on("click", "area", onClick);
             map.on("mouseleave", "area", onLeave);
@@ -431,6 +472,8 @@ if(Modernizr.webgl) {
         }
 
         function selectArea(code) {
+            debugLog(debug,"selectArea")
+
             $("#areaselect").val(code).trigger('chosen:updated');
             d3.select('abbr').on('keypress',function(evt){
                 if(d3.event.keyCode==13 || d3.event.keyCode==32){
@@ -444,6 +487,7 @@ if(Modernizr.webgl) {
 
 
         function zoomToArea(code) {
+            debugLog(debug,"zoomToArea")
 
             let specificpolygon = areas.features.filter(function(d) {return d.properties.AREACD == code})
 
@@ -456,6 +500,7 @@ if(Modernizr.webgl) {
         }
 
         function resetZoom() {
+            debugLog(debug,"resetZoom")
 
             map.fitBounds([[bounds[0], bounds[1]], [bounds[2], bounds[3]]]);
 
@@ -464,6 +509,7 @@ if(Modernizr.webgl) {
 
 
         function setAxisVal(code) {
+            debugLog(debug,"setAxisVal")
 
             d3.select('#accessibilityInfo').select('p.visuallyhidden')
             .text(function(){
@@ -493,6 +539,8 @@ if(Modernizr.webgl) {
         }
 
         function hideaxisVal() {
+            debugLog(debug,"hideaxisVal")
+
             d3.select("#currLine")
                 .style("opacity",0)
 
@@ -501,6 +549,7 @@ if(Modernizr.webgl) {
         }
 
         function createKey(config){
+            debugLog(debug,"createKey")
 
             d3.select("#keydiv").selectAll("*").remove();
 
