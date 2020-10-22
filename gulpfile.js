@@ -83,8 +83,10 @@ function compileHTML() {
 
 function compileCSS() {
     return src(`./public/${type}/sass/**/*.scss`)
-    .pipe(sass().on('error', sass.logError))
-    .pipe(dest(`./public/${type}/compiled/css`));
+        .pipe(sass({
+            includePaths: ['node_modules']
+        }).on('error', sass.logError))
+        .pipe(dest(`./public/${type}/compiled/css`));
 }
 
 function clean() {
